@@ -11,7 +11,7 @@ public class ExtensionPrototype {
     public final String version;
     public final File origin;
 
-    public boolean enabled = false;
+    public boolean enabled = true;
 
     public ExtensionPrototype(File file, String name, String version) {
         this.origin = file;

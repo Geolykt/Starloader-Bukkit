@@ -56,18 +56,14 @@ dependencies {
     // SLF4J is the base logger for most libraries, therefore we should hook it into log4j2.
     api 'org.apache.logging.log4j:log4j-core:2.14.1'
     api 'org.apache.logging.log4j:log4j-slf4j-impl:2.14.1'
-
-    api("com.heretere.hch:hch-json:1.0.0") { // config handler
-        exclude group: 'com.google.code.gson' // We already import gson manually
-    }
-    api("com.heretere.hch:hch-yaml:1.0.0") { // the yaml version
-        exclude group: 'com.google.code.gson'
-    }
+    // https://mvnrepository.com/artifact/com.lmax/disruptor
+    implementation group: 'com.lmax', name: 'disruptor', version: '3.4.4' // workaround through paper bug, probably slf4j related
 }
 
 jar {
     manifest {
-        attributes 'Main-Class': 'de.geolykt.starloader.launcher.Launcher'
+        attributes 'Main-Class': 'de.geolykt.starloader.launcher.Launcher',
+                "Multi-Release": true
     }
 }
 

@@ -1,5 +1,6 @@
 package de.geolykt.starloader.launcher;
 
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -98,21 +99,38 @@ public class Launcher {
 
     public static void main(String[] args) {
         // Main entrypoint for debugging purposes
-        INSTANCE.show();
-        while (true) {
-            try {
-                Runnable r = MAIN_TASK_QUEUE.poll();
-                if (r == null) {
-                    Thread.sleep(14);
-                } else if (r instanceof KillTaskQueueTask) {
-                    if (MAIN_TASK_QUEUE.size() != 0) {
-                        System.err.println("Error: Main thread recieved the KillTasksQueueTask despite there still being elements in the queue!");
+        INSTANCE.setArgs(args);
+        boolean nogui = false;
+        boolean slgui = false;
+        for (String arg : args) {
+            if (arg.equalsIgnoreCase("--nogui") || arg.equalsIgnoreCase("nogui")) {
+                nogui = true;
+            } else if (arg.equalsIgnoreCase("--slgui") || arg.equalsIgnoreCase("slgui")) {
+                slgui = true;
+            }
+        }
+        if ((nogui && !slgui) || GraphicsEnvironment.isHeadless()) {
+            // no GUI mode
+            System.out.println("Starting in headless mode.");
+            Utils.startGalimulator(args, INSTANCE.configuration);
+        } else {
+            INSTANCE.show();
+            while (true) {
+                try {
+                    Runnable r = MAIN_TASK_QUEUE.poll();
+                    if (r == null) {
+                        Thread.sleep(14);
+                    } else if (r instanceof KillTaskQueueTask) {
+                        if (MAIN_TASK_QUEUE.size() != 0) {
+                            System.err.println("Error: Main thread recieved the KillTasksQueueTask despite there still being elements in the queue!");
+                        }
+                        break;
+                    } else {
+                        r.run();
                     }
-                    break;
-                } else {
-                    r.run();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (InterruptedException e) {
             }
         }
     }

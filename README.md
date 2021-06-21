@@ -1,37 +1,26 @@
-# Starloader
+# Starloader-Bukkit
 
-## Starloader vs Starloader-API
+Because the answer is "why not?"
 
-The starloader project on its own doesn't do much other than providing a way
-to loader secondary jars (extensions) as well as providing mixins, a bytecode
-manipulation framework. As such most extensions should make use of Starloader-API
-to avoid conflicts, simpler extensions however don't need Starloader-API built.
+## What is this
 
-## IRC Chat
+Starloader-Bukkit is a derivative of Starloader however is meant to load minecraft server software like the minecraft vanilla server, spigot and paper instead of Galimulator. The main reason to use this is that this has easily accessible ASM without using a java agent. This could allow for better caching, but just about anything is possible with this (note: modifying bukkit plugins may or may not work - I certainly do not grantee it).
 
-We do have an IRC channel for anyone that is interested in modding the game in
-general, although the main purpose of the channel will be to discuss Starloader.
-Feel free to take a look at it at #galimulator-modding @ irc.esper.net
+## Limitations and known bugs
 
-## Building
-
-The project can be built via gradle and a JDK 11 or higher.
-I recommend JDK 17 once it comes out in fall 2021.
-This can be easily done via `./gradlew shadowJar` on most systems.
-The built jar is located in the build/libs folder, and should have a "-all"
-suffix, if that isn't the case you might have not built that shadowjar, which
-will not run as it is missing vital dependencies.
+- Spigot produces strange behaviour with the console, can likely be suppressed by going back to the vanilla console mode
+- On paper, the `cache/patched_1.17.jar` jar has to be used instead of the paperclip one! (paperclip has to be run at least once before for that)
+- The slf4j config is a bit misaligned, which is why color chars are not fully supported
+- Don't bother disabling extensions, it may not really work due to a workaround for issues with headless mode
 
 ## Running
 
-The jar then needs to be placed at the Galimulator folder 
-(home/.steam/steam/steamapps/common/Galimulator in my case)
-and can then be executed via
-
-    java -jar Galimulator-Starloader-1.0.0-SNAPSHOT-all.jar
-
-or similar. However Java 11+ needs to be used.
-If you are a linux (or any in fact) user, then you should use AdoptopenJDK
+- In headless mode:
+  - Run the jar (for the initial setup), it should crash very soon (Exit process with Ctrl + C)
+  - Modify the `.slconfig.json` file to your liking (especially the `target-jar` entry, which will be the paper/spigot jar you would otherwise run (see limitations for an issue with paper))
+  - Run the jar again, it should now work as intended, if not repeat step 2 until it works
+- In desktop mode (headless mode way will also work):
+  - You will also be able to use a fancy configuration that can be suppressed via the `--nogui`/`nogui` arguments and can be forcefully included via the `--slgui`/`slgui` argument.
 
 ## Licensing and redistributing
 

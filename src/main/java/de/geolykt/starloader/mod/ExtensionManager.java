@@ -277,7 +277,7 @@ public class ExtensionManager {
         }
     }
 
-    @Nullable
+    @NotNull
     private List<DiscoveredExtension> generateLoadOrder(@NotNull List<DiscoveredExtension> discoveredExtensions) {
         // Do some mapping so we can map strings to extensions.
         Map<String, DiscoveredExtension> extensionMap = new HashMap<>();

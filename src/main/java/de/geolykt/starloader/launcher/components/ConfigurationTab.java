@@ -11,12 +11,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
-import javax.swing.Timer;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import de.geolykt.starloader.launcher.DigestCalculationRunnable;
-import de.geolykt.starloader.launcher.Launcher;
 import de.geolykt.starloader.launcher.LauncherConfiguration;
 import de.geolykt.starloader.launcher.Utils;
 
@@ -28,7 +25,6 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
     protected final JLabel headerLabel;
     protected final JLabel headerSeperator = new JLabel();
     protected final JLabel fileChooserDesc;
-    protected final JLabel filever;
     protected final JButton fileChooserButton;
     protected final JCheckBox allowExtensions;
     protected final JCheckBox allowPatches;
@@ -38,13 +34,11 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
     protected final JButton extensionsFolderButton;
 
     protected final JFrame superparent;
-    protected DigestCalculationRunnable digester;
 
     protected JFileChooser fileChooserGali;
     protected JFileChooser fileChooserExtensions;
     protected JFileChooser fileChooserPatches;
 
-    private Timer versionTimer = null;
     public ConfigurationTab(LauncherConfiguration config, JFrame superparent) {
         super();
         cfg = config;
@@ -52,16 +46,7 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
         GridLayout layout = new GridLayout(0, 1);
         this.setLayout(layout);
         headerLabel = new JLabel("Configuration menu", SwingConstants.CENTER);
-        fileChooserDesc = new JLabel(String.format("Galimulator jar file (currently %s)", cfg.getTargetJar().getPath()));
-        filever = new JLabel("Version: Calculating...");
-        digester = new DigestCalculationRunnable(cfg.getTargetJar());
-        versionTimer = new Timer(1, evt -> {
-            setVersion(digester.getDirectly().toString());
-            stopTimer(versionTimer);
-            digester = null;
-        });
-        digester.setRunAfter(() -> versionTimer.start());
-        Launcher.MAIN_TASK_QUEUE.add(digester);
+        fileChooserDesc = new JLabel(String.format("Bukkit jar file (currently %s)", cfg.getTargetJar().getPath()));
         fileChooserButton = new JButton("Choose");
         fileChooserButton.addMouseListener(new MouseClickListener(this::showJarFileChooser));
         allowExtensions = new JCheckBox("Enable extension support", cfg.hasExtensionsEnabled());
@@ -75,7 +60,6 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
         add(headerLabel);
         add(headerSeperator);
         add(fileChooserDesc);
-        add(filever);
         add(fileChooserButton);
         add(allowExtensions);
         add(allowPatches);
@@ -85,19 +69,9 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
         add(extensionsFolderButton);
     }
 
-    /**
-     * Stops a timer, nothing more.
-     * This is a workaround to how the java compiler works and validates method calls.
-     *
-     * @param timer The timer to stop.
-     */
-    private static final void stopTimer(Timer timer) {
-        timer.stop();
-    }
-
     public void showJarFileChooser() {
         if (fileChooserGali == null) {
-            fileChooserGali = new JFileChooser(Utils.getGameDir(Utils.STEAM_GALIMULATOR_APPNAME));
+            fileChooserGali = new JFileChooser(new File("irrelevant.txt").getAbsoluteFile().getParentFile());
             FileFilter filter = new FileNameExtensionFilter("Java Archives", "jar");
             fileChooserGali.setFileFilter(filter);
             fileChooserGali.addChoosableFileFilter(filter);
@@ -158,13 +132,7 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
         File selected = fileChooserGali.getSelectedFile();
         // TODO perform verification of the file
         cfg.setTargetJar(selected);
-        fileChooserDesc.setText(String.format("Galimulator jar file (currently %s)", cfg.getTargetJar().getPath()));
-        if (digester != null) {
-            digester.cancel(true);
-        }
-        digester = new DigestCalculationRunnable(cfg.getTargetJar());
-        digester.setRunAfter(() -> versionTimer.start());
-        Launcher.MAIN_TASK_QUEUE.add(digester);
+        fileChooserDesc.setText(String.format("Bukkit jar file (currently %s)", cfg.getTargetJar().getPath()));
         if (superparent.getPreferredSize().getWidth() > superparent.getWidth()) {
             superparent.pack();
         }
@@ -180,9 +148,5 @@ public class ConfigurationTab extends JPanel implements StarloaderTab {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void setVersion(String version) {
-        filever.setText("Version: " + version);
     }
 }

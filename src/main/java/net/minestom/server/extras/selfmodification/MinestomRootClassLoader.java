@@ -55,13 +55,14 @@ public class MinestomRootClassLoader extends HierarchyClassLoader {
             add("com.google");
             add("org.objectweb.asm");
             add("org.slf4j");
-            add("org.apache");
-            add("org.spongepowered");
+            add("org.apache.logging");
+            add("org.spongepowered.asm");
+            add("org.spongepowered.tools");
             add("net.minestom.server.extras.selfmodification"); // We do not want to load this package ourselves
             add("org.jboss.shrinkwrap.resolver");
-            add("kotlin");
             add("net.fabricmc.accesswidener"); // this package will throw a linkage error too when loaded otherwise
             add("de.geolykt.starloader.transformers");
+            add("com.lmax.disruptor"); // Causes CNFEs with paper if not declared by us
         }
     };
 
@@ -188,6 +189,7 @@ public class MinestomRootClassLoader extends HierarchyClassLoader {
      * @throws IOException
      * @throws ClassNotFoundException
      */
+    @SuppressWarnings("resource")
     public byte[] loadBytes(String name, boolean transform) throws IOException, ClassNotFoundException {
         if (name == null)
             throw new ClassNotFoundException();
@@ -196,6 +198,7 @@ public class MinestomRootClassLoader extends HierarchyClassLoader {
         if (input == null) {
             throw new ClassNotFoundException("Could not find resource " + path);
         }
+        // FIXME add multi-release jar support
         byte[] originalBytes = input.readAllBytes();
         input.close();
         if (transform) {

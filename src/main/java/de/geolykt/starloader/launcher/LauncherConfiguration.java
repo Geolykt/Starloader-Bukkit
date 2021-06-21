@@ -53,10 +53,10 @@ public final class LauncherConfiguration {
     public void load() throws IOException {
         if (!storageLoc.exists()) {
             // Set defaults
-            galimulatorFile = "./jar/galimulator-desktop.jar";
+            galimulatorFile = "./server.jar";
             extensionSupport = true;
-            patchSupport = false; // TODO make "true" the default, when it is a useable setting
-            extensionsFolder = new File("extensions/");
+            patchSupport = false; // TODO make "true" the default, when it is a usable setting
+            extensionsFolder = new File("plugins/");
             extensionsFolder.mkdirs();
             patchesFolder = new File("patches/");
             extensions = new ExtensionPrototypeList(extensionsFolder);
