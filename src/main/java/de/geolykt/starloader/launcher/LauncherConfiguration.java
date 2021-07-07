@@ -56,7 +56,7 @@ public final class LauncherConfiguration {
             galimulatorFile = "./server.jar";
             extensionSupport = true;
             patchSupport = false; // TODO make "true" the default, when it is a usable setting
-            extensionsFolder = new File("plugins/");
+            extensionsFolder = new File("extensions/");
             extensionsFolder.mkdirs();
             patchesFolder = new File("patches/");
             extensions = new ExtensionPrototypeList(extensionsFolder);
